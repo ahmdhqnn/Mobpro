@@ -6,10 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,21 +65,41 @@ fun MainScreen() {
 @Composable
 fun ScreenContent(modifier: Modifier = Modifier) {
     var number by remember { mutableIntStateOf(0) }
-    Column (
-        modifier = modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    
+    Row(
+        modifier = modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Button(
+            onClick = { 
+                if (number > 0) {
+                    number--
+                }
+            },
+            modifier = Modifier.padding(8.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            Text(
+                text = "-",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+
         Text(
             text = number.toString(),
             style = MaterialTheme.typography.displayLarge
         )
+
         Button(
             onClick = { number++ },
-            modifier = Modifier.fillMaxWidth(0.5f).padding(top = 16.dp),
+            modifier = Modifier.padding(8.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            Text(text = stringResource(R.string.count))
+            Text(
+                text = "+",
+                style = MaterialTheme.typography.headlineMedium
+            )
         }
     }
 }
