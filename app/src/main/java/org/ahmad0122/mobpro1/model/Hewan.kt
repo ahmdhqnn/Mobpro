@@ -1,4 +1,4 @@
-package org.ahmad0122.mobpro1
+package org.ahmad0122.mobpro1.model
 
 import androidx.annotation.DrawableRes
 
