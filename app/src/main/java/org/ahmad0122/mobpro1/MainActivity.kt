@@ -1,5 +1,6 @@
 package org.ahmad0122.mobpro1
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,13 +32,14 @@ import org.ahmad0122.mobpro1.model.Hewan
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Mobpro1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(Modifier.padding(innerPadding))
+                Scaffold(modifier = Modifier.fillMaxSize()) {
+                    MainScreen()
                 }
             }
         }
@@ -45,7 +47,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen() {
     val data = listOf(
         Hewan("Ayam", R.drawable.ayam),
         Hewan("Bebek", R.drawable.bebek),
@@ -58,7 +60,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     Scaffold {
         innerPadding ->
         ScreenContent(data[index], Modifier.padding(innerPadding)) {
-            index++
+            index = if (index == data.size-1) 0 else index +1
         }
     }
 }
