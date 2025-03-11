@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Mobpro 1</string>
+    <string name="app_intro">Mari menghitung luas dan keliling persegi panjang! Masukan data berikut</string>
+    <string name="panjang">Panjang</string>
+    <string name="lebar">Lebar</string>
+    <string name="hitung">Hitung</string>
+    <string name="reset">Reset</string>
 </resources>
