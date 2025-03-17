@@ -234,6 +234,6 @@ fun ErrorHint(isError: Boolean) {
 @Composable
 fun MainScreenPreview() {
     Mobpro1Theme {
-        MainScreen()
+        AboutScreen()
     }
 }
