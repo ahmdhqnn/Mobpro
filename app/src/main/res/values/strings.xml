@@ -14,4 +14,5 @@
 
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="copyright">Hitung BMI merupakan sebuah aplikasi Android untuk menghitung body mass index (BMI) sehingga seseorang dapat mengetahui apakah berat badannya ideal, gemuk atau kurus.\n\nAplikasi ini dibuat untuk kelas Pemrograman untuk Perangkat Bergerak 1.\n\nCopyright © 2025 Ahmad Hakin Najili. All rights reserved.</string>
+    <string name="kembali">Kembali</string>
 </resources>
