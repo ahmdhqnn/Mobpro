@@ -1,5 +1,7 @@
 package org.ahmad0122.mobpro1.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -102,6 +105,8 @@ fun ScreenContent(modifier: Modifier = Modifier) {
 
     var bmi by rememberSaveable { mutableFloatStateOf(0f) }
     var kategori by rememberSaveable { mutableIntStateOf(0) }
+
+    val context = LocalContext.current
 
     Column (
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -192,7 +197,22 @@ fun ScreenContent(modifier: Modifier = Modifier) {
             Text(text = stringResource(kategori).uppercase(),
                 style = MaterialTheme.typography.headlineLarge
             )
+            Button(
+                onClick = {
+                    shareData(
+                        context = context,
+                        message = context.getString(R.string.bagikan_template, berat, tinggi, gender, bmi, context.getString(kategori).uppercase())
+
+                    )
+                },
+                modifier = Modifier.padding(top = 8.dp),
+                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text(text = stringResource(R.string.bagikan))
+            }
+
         }
+
     }
 }
 
@@ -246,6 +266,18 @@ fun ErrorHint(isError: Boolean) {
         Text(text = stringResource(R.string.input_invalid))
     }
 }
+
+
+private fun shareData(context: Context, message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+        if (shareIntent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(shareIntent)
+        }
+}
+
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
