@@ -13,4 +13,6 @@
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="copyright">Aplikasi hitung luas dan keliling persegi adalah aplikasi sederhana yang dapat digunakan untuk menghitung luas dan keliling persegi berdasarkan panjang sisi yang dimasukkan oleh pengguna. Dalam aplikasi ini, pengguna hanya perlu memasukkan panjang sisi persegi, dan aplikasi secara otomatis menghitung hasil luas dan kelilingnya. \nCopyright @ 2025 Ahmad Hakin Najili. \nAll rights reserved.</string>
     <string name="kembali">Kembali</string>
+    <string name="bagikan">Bagikan</string>
+    <string name="bagikan_template">Luas: %1$,.2f \nKeliling: %2$,.2f</string>
 </resources>
