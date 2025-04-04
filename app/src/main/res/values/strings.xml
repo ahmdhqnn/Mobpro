@@ -1,18 +1,17 @@
 <resources>
-    <string name="app_name">Mobpro1</string>
-    <string name="app_bio">Mari menghitung luas dan keliling persegi panjang! Masukan data berikut</string>
-    <string name="panjang">Panjang</string>
-    <string name="lebar">Lebar</string>
-    <string name="input_invalid">Tidak boleh kosong</string>
-    <string name="hitung">Hitung</string>
+    <string name="app_name">Currency Converter</string>
+    <string name="app_bio">Konversi mata uang dengan mudah</string>
+    <string name="amount">Masukkan jumlah</string>
+    <string name="from_currency">Dari mata uang</string>
+    <string name="to_currency">Ke mata uang</string>
+    <string name="input_invalid">Masukkan angka yang valid</string>
+    <string name="convert">Konversi</string>
     <string name="reset">Reset</string>
-    <string name="luas_x">Luas: %1$,.2f</string>
-    <string name="keliling_x">Keliling: %1$,.2f</string>
-
+    <string name="result">Hasil konversi: %1$,.2f</string>
 
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
-    <string name="copyright">Aplikasi hitung luas dan keliling persegi adalah aplikasi sederhana yang dapat digunakan untuk menghitung luas dan keliling persegi berdasarkan panjang sisi yang dimasukkan oleh pengguna. Dalam aplikasi ini, pengguna hanya perlu memasukkan panjang sisi persegi, dan aplikasi secara otomatis menghitung hasil luas dan kelilingnya. \nCopyright @ 2025 Ahmad Hakin Najili. \nAll rights reserved.</string>
+    <string name="copyright">Aplikasi konverter mata uang adalah aplikasi sederhana yang dapat digunakan untuk mengkonversi mata uang IDR ke USD dan sebaliknya. Dalam aplikasi ini, pengguna dapat memasukkan jumlah uang yang ingin dikonversi dan memilih mata uang asal dan tujuan. \nCopyright @ 2025 Ahmad Hakin Najili. \nAll rights reserved.</string>
     <string name="kembali">Kembali</string>
     <string name="bagikan">Bagikan</string>
-    <string name="bagikan_template">Luas: %1$,.2f \nKeliling: %2$,.2f</string>
+    <string name="bagikan_template">%1$,.2f %2$s = %3$,.2f %4$s</string>
 </resources>

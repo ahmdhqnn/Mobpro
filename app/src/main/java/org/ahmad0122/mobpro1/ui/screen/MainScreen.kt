@@ -1,28 +1,36 @@
 package org.ahmad0122.mobpro1.ui.screen
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,12 +38,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +54,8 @@ import androidx.navigation.compose.rememberNavController
 import org.ahmad0122.mobpro1.R
 import org.ahmad0122.mobpro1.navigation.Screen
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +64,12 @@ fun MainScreen(navController: NavHostController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.app_name))
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -73,164 +89,265 @@ fun MainScreen(navController: NavHostController) {
             )
         }
     ) { innerPadding ->
-        ScreenContent(Modifier.padding(innerPadding))
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ScreenContent()
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier) {
-    var panjang by remember { mutableStateOf("") }
-    var panjangError by remember { mutableStateOf(false) }
+fun ScreenContent() {
+    var amount by rememberSaveable { mutableStateOf("") }
+    var amountError by rememberSaveable { mutableStateOf(false) }
+    var fromCurrency by rememberSaveable { mutableStateOf("IDR") }
+    var toCurrency by rememberSaveable { mutableStateOf("USD") }
+    var result by rememberSaveable { mutableFloatStateOf(0f) }
+    var isExpandedFrom by rememberSaveable { mutableStateOf(false) }
+    var isExpandedTo by rememberSaveable { mutableStateOf(false) }
 
-    var lebar by remember { mutableStateOf("") }
-    var lebarError by remember { mutableStateOf(false) }
+    val currencies = listOf("IDR", "USD")
+    val exchangeRate = 16555f // 1 USD = 16.555 IDR
 
-    var luas by remember { mutableFloatStateOf(0f) }
-    var keliling by remember { mutableFloatStateOf(0f) }
+    fun convertCurrency() {
+        if (amount.isEmpty()) {
+            amountError = true
+            return
+        }
 
-    val context = LocalContext.current
+        try {
+            val amountValue = amount.toFloat()
+            if (amountValue <= 0) {
+                amountError = true
+                return
+            }
 
-    fun resetV() {
-        panjang = ""
-        lebar = ""
-        panjangError = false
-        lebarError = false
-        luas = 0f
-        keliling = 0f
+            result = when {
+                fromCurrency == "IDR" && toCurrency == "USD" -> amountValue / exchangeRate
+                fromCurrency == "USD" && toCurrency == "IDR" -> amountValue * exchangeRate
+                else -> amountValue
+            }
+            amountError = false
+        } catch (_: NumberFormatException) {
+            amountError = true
+        }
+    }
+
+    fun resetValues() {
+        amount = ""
+        amountError = false
+        result = 0f
+    }
+
+    fun formatCurrency(value: Float, currency: String): String {
+        val formatter = when (currency) {
+            "IDR" -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+            "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
+            else -> NumberFormat.getCurrencyInstance()
+        }
+        return formatter.format(value)
     }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.app_bio),
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
-            value = panjang,
-            onValueChange = { panjang = it },
-            label = { Text(text = stringResource(R.string.panjang)) },
-            supportingText = { ErrorHint(panjangError) },
-            isError = panjangError,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
             ),
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = lebar,
-            onValueChange = { lebar = it },
-            label = { Text(text = stringResource(R.string.lebar)) },
-            supportingText = { ErrorHint(lebarError) },
-            isError = lebarError,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text(text = stringResource(R.string.amount)) },
+                    supportingText = { ErrorHint(amountError) },
+                    isError = amountError,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = isExpandedFrom,
+                        onExpandedChange = { isExpandedFrom = it },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        OutlinedTextField(
+                            value = fromCurrency,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.from_currency)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpandedFrom) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .clip(RoundedCornerShape(12.dp)),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = isExpandedFrom,
+                            onDismissRequest = { isExpandedFrom = false }
+                        ) {
+                            currencies.forEach { currency ->
+                                DropdownMenuItem(
+                                    text = { Text(currency) },
+                                    onClick = {
+                                        fromCurrency = currency
+                                        isExpandedFrom = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.Filled.ArrowForward,
+                        contentDescription = "Convert to",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    ExposedDropdownMenuBox(
+                        expanded = isExpandedTo,
+                        onExpandedChange = { isExpandedTo = it },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        OutlinedTextField(
+                            value = toCurrency,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.to_currency)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpandedTo) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .clip(RoundedCornerShape(12.dp)),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = isExpandedTo,
+                            onDismissRequest = { isExpandedTo = false }
+                        ) {
+                            currencies.forEach { currency ->
+                                DropdownMenuItem(
+                                    text = { Text(currency) },
+                                    onClick = {
+                                        toCurrency = currency
+                                        isExpandedTo = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = {
-                    panjangError = false
-                    lebarError = false
-
-                    if (panjang.isBlank() || panjang.toFloatOrNull() == null || panjang.toFloat() <= 0) {
-                        panjangError = true
-                    }
-                    if (lebar.isBlank() || lebar.toFloatOrNull() == null || lebar.toFloat() <= 0) {
-                        lebarError = true
-                    }
-
-                    if (panjangError || lebarError) {
-                        return@Button
-                    }
-
-                    val panjangV = panjang.toFloat()
-                    val lebarV = lebar.toFloat()
-                    luas = hitungLuas(panjangV, lebarV)
-                    keliling = hitungKeliling(panjangV, lebarV)
-                },
+                onClick = { convertCurrency() },
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = stringResource(R.string.hitung))
+                Text(text = stringResource(R.string.convert))
             }
 
             Button(
-                onClick = {
-                    resetV()
-                },
+                onClick = { resetValues() },
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(text = stringResource(R.string.reset))
             }
         }
 
-        if (luas > 0) {
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 1.dp)
-            Text(
-                text = stringResource(R.string.luas_x, luas),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = stringResource(R.string.keliling_x, keliling),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Button(
-                onClick = {
-                    shareData(
-                        context = context,
-                        message = context.getString(R.string.bagikan_template, luas, keliling)
-                    )
-                },
-                modifier = Modifier.padding(top = 8.dp),
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+        if (result > 0) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                )
             ) {
-                Text(text = stringResource(R.string.bagikan))
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "${formatCurrency(amount.toFloat(), fromCurrency)} = ${formatCurrency(result, toCurrency)}",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = "Kurs: 1 USD = ${formatCurrency(exchangeRate, "IDR")}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun ErrorHint(isError: Boolean) {
-    if (isError) {
-        Text(text = stringResource(R.string.input_invalid), color = MaterialTheme.colorScheme.error)
-    }
-}
-
-private fun hitungLuas(panjang: Float, lebar: Float): Float {
-    return panjang * lebar
-}
-
-private fun hitungKeliling(panjang: Float, lebar: Float): Float {
-    return (panjang + lebar) * 2
-}
-
-private fun shareData(context: Context, message: String) {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, message)
-    }
-    if (shareIntent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(shareIntent)
+fun ErrorHint(error: Boolean) {
+    if (error) {
+        Text(
+            text = stringResource(R.string.input_invalid),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
 
