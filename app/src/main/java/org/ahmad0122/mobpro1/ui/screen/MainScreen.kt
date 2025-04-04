@@ -117,25 +117,23 @@ fun ScreenContent() {
     fun convertCurrency() {
         if (amount.isEmpty()) {
             amountError = true
+            result = 0f
             return
         }
 
-        try {
-            val amountValue = amount.toFloat()
-            if (amountValue <= 0) {
-                amountError = true
-                return
-            }
-
-            result = when {
-                fromCurrency == "IDR" && toCurrency == "USD" -> amountValue / exchangeRate
-                fromCurrency == "USD" && toCurrency == "IDR" -> amountValue * exchangeRate
-                else -> amountValue
-            }
-            amountError = false
-        } catch (_: NumberFormatException) {
+        val amountValue = amount.toFloatOrNull()
+        if (amountValue == null || amountValue <= 0) {
             amountError = true
+            result = 0f
+            return
         }
+
+        result = when {
+            fromCurrency == "IDR" && toCurrency == "USD" -> amountValue / exchangeRate
+            fromCurrency == "USD" && toCurrency == "IDR" -> amountValue * exchangeRate
+            else -> amountValue
+        }
+        amountError = false
     }
 
     fun resetValues() {
@@ -187,7 +185,12 @@ fun ScreenContent() {
             ) {
                 OutlinedTextField(
                     value = amount,
-                    onValueChange = { amount = it },
+                    onValueChange = { 
+                        amount = it
+                        if (it.isEmpty()) {
+                            result = 0f
+                        }
+                    },
                     label = { Text(text = stringResource(R.string.amount)) },
                     supportingText = { ErrorHint(amountError) },
                     isError = amountError,
@@ -322,18 +325,21 @@ fun ScreenContent() {
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "${formatCurrency(amount.toFloat(), fromCurrency)} = ${formatCurrency(result, toCurrency)}",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = "Kurs: 1 USD = ${formatCurrency(exchangeRate, "IDR")}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
+                    val amountValue = amount.toFloatOrNull()
+                    if (amountValue != null && amountValue > 0) {
+                        Text(
+                            text = "${formatCurrency(amountValue, fromCurrency)} = ${formatCurrency(result, toCurrency)}",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = "Kurs: 1 USD = ${formatCurrency(exchangeRate, "IDR")}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
         }
