@@ -1,6 +1,8 @@
 package org.ahmad0122.mobpro1.ui.screen
 
+import android.content.Intent
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,12 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -43,12 +47,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.ahmad0122.mobpro1.R
@@ -57,9 +64,22 @@ import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
 import java.text.NumberFormat
 import java.util.Locale
 
+private fun formatCurrency(value: Float, currency: String): String {
+    val formatter = when (currency) {
+        "IDR" -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
+        else -> NumberFormat.getCurrencyInstance()
+    }
+    return formatter.format(value)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
+    var showMenu by rememberSaveable { mutableStateOf(false) }
+    var currentResult by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,12 +97,58 @@ fun MainScreen(navController: NavHostController) {
                 ),
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate(Screen.About.route)
+                        if (currentResult.isNotEmpty()) {
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_subject))
+                                putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text, currentResult))
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, null))
+                        }
                     }) {
                         Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = stringResource(R.string.tentang_aplikasi),
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = stringResource(R.string.share),
                             tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = { showMenu = !showMenu }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.more),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_rate)) },
+                            onClick = {
+                                showMenu = false
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = "market://details?id=${context.packageName}".toUri()
+                                }
+                                try {
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {
+                                    // If Play Store app is not installed, open in browser
+                                    val webIntent = Intent(Intent.ACTION_VIEW).apply {
+                                        data =
+                                            "https://play.google.com/store/apps/details?id=${context.packageName}".toUri()
+                                    }
+                                    context.startActivity(webIntent)
+                                }
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_about)) },
+                            onClick = {
+                                showMenu = false
+                                navController.navigate(Screen.About.route)
+                            }
                         )
                     }
                 }
@@ -95,14 +161,20 @@ fun MainScreen(navController: NavHostController) {
                 .padding(innerPadding),
             color = MaterialTheme.colorScheme.background
         ) {
-            ScreenContent()
+            ScreenContent(
+                onResultChanged = { result ->
+                    currentResult = result
+                }
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenContent() {
+fun ScreenContent(
+    onResultChanged: (String) -> Unit = {}
+) {
     var amount by rememberSaveable { mutableStateOf("") }
     var amountError by rememberSaveable { mutableStateOf(false) }
     var fromCurrency by rememberSaveable { mutableStateOf("IDR") }
@@ -134,21 +206,18 @@ fun ScreenContent() {
             else -> amountValue
         }
         amountError = false
+
+        // Update result text for sharing
+        val formattedAmount = formatCurrency(amountValue, fromCurrency)
+        val formattedResult = formatCurrency(result, toCurrency)
+        onResultChanged("$formattedAmount = $formattedResult")
     }
 
     fun resetValues() {
         amount = ""
         amountError = false
         result = 0f
-    }
-
-    fun formatCurrency(value: Float, currency: String): String {
-        val formatter = when (currency) {
-            "IDR" -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-            "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
-            else -> NumberFormat.getCurrencyInstance()
-        }
-        return formatter.format(value)
+        onResultChanged("")
     }
 
     Column(
@@ -231,7 +300,25 @@ fun ScreenContent() {
                         ) {
                             currencies.forEach { currency ->
                                 DropdownMenuItem(
-                                    text = { Text(currency) },
+                                    text = { 
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Image(
+                                                painter = painterResource(
+                                                    id = when (currency) {
+                                                        "IDR" -> R.drawable.flag_idr
+                                                        "USD" -> R.drawable.flag_usd
+                                                        else -> R.drawable.flag_idr
+                                                    }
+                                                ),
+                                                contentDescription = currency,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                            Text(currency)
+                                        }
+                                    },
                                     onClick = {
                                         fromCurrency = currency
                                         isExpandedFrom = false
@@ -242,7 +329,7 @@ fun ScreenContent() {
                     }
 
                     Icon(
-                        imageVector = Icons.Filled.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Convert to",
                         modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.primary
@@ -271,7 +358,25 @@ fun ScreenContent() {
                         ) {
                             currencies.forEach { currency ->
                                 DropdownMenuItem(
-                                    text = { Text(currency) },
+                                    text = { 
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Image(
+                                                painter = painterResource(
+                                                    id = when (currency) {
+                                                        "IDR" -> R.drawable.flag_idr
+                                                        "USD" -> R.drawable.flag_usd
+                                                        else -> R.drawable.flag_idr
+                                                    }
+                                                ),
+                                                contentDescription = currency,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                            Text(currency)
+                                        }
+                                    },
                                     onClick = {
                                         toCurrency = currency
                                         isExpandedTo = false
@@ -335,7 +440,7 @@ fun ScreenContent() {
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Kurs: 1 USD = ${formatCurrency(exchangeRate, "IDR")}",
+                            text = stringResource(R.string.exchange_rate, formatCurrency(exchangeRate, "IDR")),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )
