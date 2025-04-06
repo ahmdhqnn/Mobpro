@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
@@ -34,32 +33,33 @@ fun AboutScreen(navController: NavHostController) {
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.kembali)
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
                 title = {
-                    Text(text = stringResource(id = R.string.tentang_aplikasi))
+                    Text(text = stringResource(R.string.about_app))
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
-                ),
-
+                )
             )
         }
     ) { innerPadding ->
-        Text(text = stringResource(R.string.copyright),
-            modifier = Modifier.padding(innerPadding).padding(16.dp))
+        Text(
+            text = stringResource(R.string.copyright),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+        )
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun MainScreenPreview() {
+fun AboutScreenPreview() {
     Mobpro1Theme {
         AboutScreen(rememberNavController())
     }

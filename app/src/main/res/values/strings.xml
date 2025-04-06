@@ -1,17 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Currency Converter</string>
-    <string name="app_bio">Konversi mata uang dengan mudah</string>
-    <string name="amount">Masukkan jumlah</string>
-    <string name="from_currency">Dari mata uang</string>
-    <string name="to_currency">Ke mata uang</string>
-    <string name="input_invalid">Masukkan angka yang valid</string>
-    <string name="convert">Konversi</string>
+    <string name="app_bio">Convert currencies easily</string>
+    <string name="amount">Enter amount</string>
+    <string name="from_currency">From currency</string>
+    <string name="to_currency">To currency</string>
+    <string name="input_invalid">Please enter a valid number</string>
+    <string name="convert">Convert</string>
     <string name="reset">Reset</string>
-    <string name="result">Hasil konversi: %1$,.2f</string>
+    <string name="result">Conversion result: %1$,.2f</string>
 
-    <string name="tentang_aplikasi">Tentang Aplikasi</string>
-    <string name="copyright">Aplikasi konverter mata uang adalah aplikasi sederhana yang dapat digunakan untuk mengkonversi mata uang IDR ke USD dan sebaliknya. Dalam aplikasi ini, pengguna dapat memasukkan jumlah uang yang ingin dikonversi dan memilih mata uang asal dan tujuan. \nCopyright @ 2025 Ahmad Hakin Najili. \nAll rights reserved.</string>
-    <string name="kembali">Kembali</string>
-    <string name="bagikan">Bagikan</string>
-    <string name="bagikan_template">%1$,.2f %2$s = %3$,.2f %4$s</string>
+    <string name="about_app">About App</string>
+    <string name="copyright">Currency converter is a simple application that can be used to convert IDR to USD and vice versa. In this app, users can enter the amount of money they want to convert and choose the source and target currencies. \nCopyright @ 2025 Ahmad Hakin Najili. \nAll rights reserved.</string>
+    <string name="back">Back</string>
+    <string name="share">Share</string>
+    <string name="share_template">%1$,.2f %2$s = %3$,.2f %4$s</string>
+    <string name="exchange_rate">Exchange rate: 1 USD = %1$s</string>
+    <string name="menu_share">Share Result</string>
+    <string name="menu_rate">Rate App</string>
+    <string name="menu_about">About</string>
+    <string name="share_subject">Currency Conversion Result</string>
+    <string name="share_text">Check out this currency conversion: %1$s</string>
+    <string name="more">More options</string>
 </resources>
