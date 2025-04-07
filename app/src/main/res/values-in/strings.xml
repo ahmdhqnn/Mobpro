@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Catatan Harian</string>
+    <string name="note_list">Catatan</string>
+    <string name="add_note">Tambah Catatan</string>
+    <string name="no_notes">Belum ada catatan. Tambahkan!</string>
+    <string name="note_label">Catatan Anda</string>
+    <string name="save_note">Simpan Catatan</string>
+    <string name="note_empty_error">Catatan tidak boleh kosong</string>
+    <string name="share_note">Bagikan Catatan</string>
+    <string name="about_app">Tentang Aplikasi</string>
+    <string name="about_app_message">Aplikasi Catatan Harian v1.0</string>
+    <string name="category_label">Kategori</string>
+    <string name="important_label">Tandai sebagai Penting</string>
+    <string-array name="note_categories">
+        <item>Pribadi</item>
+        <item>Kerja</item>
+        <item>Belajar</item>
+        <item>Lainnya</item>
+    </string-array>
+</resources> 
