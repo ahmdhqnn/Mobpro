@@ -1,25 +1,34 @@
 package org.ahmad0122.mobpro1.ui.screen
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import org.ahmad0122.mobpro1.MainViewModel
 import org.ahmad0122.mobpro1.R
+import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.navigation.Screen
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    Scaffold (
+fun MainScreen(navController: NavHostController) {
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -30,20 +39,75 @@ fun MainScreen() {
                     titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.FormBaru.route) }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.tambah_catatan),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
-    ) {
-            innerPadding ->
-        ScreenContent(Modifier.padding((innerPadding)))
+    ) { innerPadding ->
+        ScreenContent(modifier = Modifier.padding(innerPadding), navController = navController)
     }
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello Android",
-        modifier = modifier
+fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
+    val viewModel: MainViewModel = viewModel()
+    val data = viewModel.data
 
-    )
+    if (data.isEmpty()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(R.string.list_kosong))
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 84.dp)
+        ) {
+            items(data) { catatan ->
+                ListItem(catatan = catatan) {
+                    navController.navigate(Screen.FormUbah.withId(catatan.id))
+                }
+                HorizontalDivider()
+            }
+        }
+    }
+}
+
+@Composable
+fun ListItem(catatan: Catatan, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = catatan.judul,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = catatan.catatan,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(text = catatan.tanggal)
+    }
 }
 
 @Preview(showBackground = true)
@@ -51,6 +115,6 @@ fun ScreenContent(modifier: Modifier = Modifier) {
 @Composable
 fun MainScreenPreview() {
     Mobpro1Theme {
-        MainScreen()
+        MainScreen(rememberNavController())
     }
 }
