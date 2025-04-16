@@ -1,8 +1,8 @@
 package org.ahmad0122.mobpro1.model
 
-data class Catatan(
+data class Mahasiswa(
     val id: Long,
-    val judul: String,
-    val catatan: String,
-    val tanggal: String,
+    val nama: String,
+    val nim: String,
+    val kelas: String,
 )

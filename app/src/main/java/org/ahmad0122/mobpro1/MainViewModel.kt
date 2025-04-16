@@ -1,42 +1,55 @@
 package org.ahmad0122.mobpro1
 
 import androidx.lifecycle.ViewModel
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.model.Mahasiswa
 
 class MainViewModel: ViewModel() {
     val data = listOf(
-        Catatan(
+        Mahasiswa(
             1,
-            "Kuliah Mobpro 17 Feb",
-            "Kuliah hari pertama. Ternyata keren juga yang ma...",
-            "2025-02-17 12:34:56"
+            "Rizza Indah Mega Mandasari",
+            "6706244601",
+            "D3IF-46-01"
         ),
-        Catatan(
+        Mahasiswa(
             2,
-            "Kuliah Mobpro 19 Feb",
-            "Praktikum pertama: running modul. Alhamdulillah...",
-            "2025-02-19 12:34:56"
+            "Indra Azimi",
+            "6706244602",
+            "D3IF-46-02"
         ),
-        Catatan(
+        Mahasiswa(
             3,
-            "Ini Data Dump 1",
-            "Dump dump dump 1",
-            "2025-02-19 12:34:56"
-        ),Catatan(
-            4,
-            "Ini Data Dump 2",
-            "Dump dump dump 2",
-            "2025-02-19 12:34:56"
+            "Reza Budiawan",
+            "6706244612",
+            "D3IF-46-02"
         ),
-        Catatan(
+        Mahasiswa(
+            4,
+            "Dwiko Indrawansyah",
+            "6706244622",
+            "D3IF-46-02"
+        ),
+        Mahasiswa(
             5,
-            "Kuliah Mobpro 05 Mar",
-            "Praktikum kali ini bikin aplikasi Galeri Hewan.",
-            "2025-03-05 12:34:56"
+            "Cahyana",
+            "6706244603",
+            "D3IF-46-03"
+        ),
+        Mahasiswa(
+            6,
+            "Indra Azimi",
+            "6706244604",
+            "D3IF-46-04"
+        ),
+        Mahasiswa(
+            7,
+            "Erna Hikmawati",
+            "6706244605",
+            "D3IF-46-05"
         )
     )
 
-    fun getCatatan(id: Long): Catatan? {
+    fun getMahasiswa(id: Long): Mahasiswa? {
         return data.find { it.id == id }
     }
 }

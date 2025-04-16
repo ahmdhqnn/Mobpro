@@ -3,7 +3,7 @@ package org.ahmad0122.mobpro1.ui.screen
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -38,20 +40,22 @@ import org.ahmad0122.mobpro1.MainViewModel
 import org.ahmad0122.mobpro1.R
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
 
-const val KEY_ID_CATATAN = "idCatatan"
+const val KEY_ID_MAHASISWA = "idMahasiswa"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
     val viewModel: MainViewModel = viewModel()
-    var judul by remember { mutableStateOf(("")) }
-    var catatan by remember { mutableStateOf("") }
+    var nama by remember { mutableStateOf(("")) }
+    var nim by remember { mutableStateOf("") }
+    var kelas by remember { mutableStateOf("D3IF-46-01") }
 
     LaunchedEffect(Unit) {
         if (id == null) return@LaunchedEffect
-        val data = viewModel.getCatatan(id)?: return@LaunchedEffect
-        judul = data.judul
-        catatan = data.catatan
+        val data = viewModel.getMahasiswa(id)?: return@LaunchedEffect
+        nama = data.nama
+        nim = data.nim
+        kelas = data.kelas
     }
     Scaffold (
         topBar = {
@@ -67,9 +71,9 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                 },
                 title = {
                     if (id == null)
-                        Text(text = stringResource(id = R.string.tambah_catatan))
+                        Text(text = stringResource(id = R.string.tambah_mahasiswa))
                     else
-                        Text(text = stringResource(id = R.string.edit_catatan))
+                        Text(text = stringResource(id = R.string.ubah_mahasiswa))
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -88,30 +92,34 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         }
     ) {
             padding ->
-        FormCatatan(
-            title = judul,
-            onTitleChange = { judul = it },
-            desc = catatan,
-            onDescChange = { catatan = it },
+        FormMahasiswa(
+            nama = nama,
+            onNamaChange = { nama = it },
+            nim = nim,
+            onNimChange = { nim = it },
+            kelas = kelas,
+            onKelasChange = { kelas = it },
             modifier = Modifier.padding(padding)
         )
     }
 }
 
 @Composable
-fun FormCatatan(
-    title: String, onTitleChange: (String) -> Unit,
-    desc: String, onDescChange: (String) -> Unit,
+fun FormMahasiswa(
+    nama: String, onNamaChange: (String) -> Unit,
+    nim: String, onNimChange: (String) -> Unit,
+    kelas: String, onKelasChange: (String) -> Unit,
     modifier: Modifier
 ) {
     Column (
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxWidth().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Nama field
         OutlinedTextField(
-            value = title,
-            onValueChange = { onTitleChange(it) },
-            label = { Text(text = stringResource(R.string.judul)) },
+            value = nama,
+            onValueChange = { onNamaChange(it) },
+            label = { Text(text = stringResource(R.string.nama)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
@@ -119,17 +127,69 @@ fun FormCatatan(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        
+        // NIM field
         OutlinedTextField(
-            value = desc,
-            onValueChange = { onDescChange(it) },
-            label = { Text(text = stringResource(R.string.isi_catatan)) },
+            value = nim,
+            onValueChange = { onNimChange(it) },
+            label = { Text(text = stringResource(R.string.nim)) },
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
                 imeAction = ImeAction.Next
             ),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
+        
+        // Kelas radio buttons
+        Text(text = stringResource(R.string.kelas))
+        
+        KelasRadioButton(
+            selected = kelas == "D3IF-46-01",
+            onSelected = { onKelasChange("D3IF-46-01") },
+            label = "D3IF-46-01"
+        )
+        
+        KelasRadioButton(
+            selected = kelas == "D3IF-46-02",
+            onSelected = { onKelasChange("D3IF-46-02") },
+            label = "D3IF-46-02"
+        )
+        
+        KelasRadioButton(
+            selected = kelas == "D3IF-46-03",
+            onSelected = { onKelasChange("D3IF-46-03") },
+            label = "D3IF-46-03"
+        )
+        
+        KelasRadioButton(
+            selected = kelas == "D3IF-46-04",
+            onSelected = { onKelasChange("D3IF-46-04") },
+            label = "D3IF-46-04"
+        )
+        
+        KelasRadioButton(
+            selected = kelas == "D3IF-46-05",
+            onSelected = { onKelasChange("D3IF-46-05") },
+            label = "D3IF-46-05"
+        )
+    }
+}
 
+@Composable
+fun KelasRadioButton(
+    selected: Boolean,
+    onSelected: () -> Unit,
+    label: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onSelected
+        )
+        Text(text = label)
     }
 }
 

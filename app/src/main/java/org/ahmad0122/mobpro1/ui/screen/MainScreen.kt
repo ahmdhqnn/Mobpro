@@ -21,7 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.ahmad0122.mobpro1.MainViewModel
 import org.ahmad0122.mobpro1.R
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.model.Mahasiswa
 import org.ahmad0122.mobpro1.navigation.Screen
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
 
@@ -46,7 +46,7 @@ fun MainScreen(navController: NavHostController) {
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.tambah_catatan),
+                    contentDescription = stringResource(R.string.tambah_mahasiswa),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -76,9 +76,9 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 84.dp)
         ) {
-            items(data) { catatan ->
-                ListItem(catatan = catatan) {
-                    navController.navigate(Screen.FormUbah.withId(catatan.id))
+            items(data) { mahasiswa ->
+                ListItem(mahasiswa = mahasiswa) {
+                    navController.navigate(Screen.FormUbah.withId(mahasiswa.id))
                 }
                 HorizontalDivider()
             }
@@ -87,7 +87,7 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
 }
 
 @Composable
-fun ListItem(catatan: Catatan, onClick: () -> Unit) {
+fun ListItem(mahasiswa: Mahasiswa, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,17 +96,21 @@ fun ListItem(catatan: Catatan, onClick: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = catatan.judul,
+            text = mahasiswa.nama,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = catatan.catatan,
-            maxLines = 2,
+            text = mahasiswa.nim,
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = catatan.tanggal)
+        Text(
+            text = mahasiswa.kelas,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
