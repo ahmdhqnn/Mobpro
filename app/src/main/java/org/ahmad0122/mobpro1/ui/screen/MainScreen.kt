@@ -4,13 +4,15 @@ import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,6 +26,9 @@ import org.ahmad0122.mobpro1.R
 import org.ahmad0122.mobpro1.model.Catatan
 import org.ahmad0122.mobpro1.navigation.Screen
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
+import org.ahmad0122.mobpro1.util.ViewModelFactory
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,8 +63,11 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController) {
-    val viewModel: MainViewModel = viewModel()
-    val data = viewModel.data
+    val context = LocalContext.current
+    val factory = ViewModelFactory(context)
+    val viewModel: MainViewModel = viewModel(factory = factory)
+    val data by viewModel.data.collectAsState()
+
 
     if (data.isEmpty()) {
         Column(
