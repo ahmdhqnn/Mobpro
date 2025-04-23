@@ -11,4 +11,16 @@
     <string name="invalid">Judul dan isi catatan tidak boleh kosong.</string>
     <string name="lainnya">Opsi lainnya</string>
     <string name="hapus">Hapus catatan</string>
+    
+    <!-- String untuk aplikasi mahasiswa -->
+    <string name="tambah_mahasiswa">Tambah mahasiswa</string>
+    <string name="edit_mahasiswa">Ubah mahasiswa</string>
+    <string name="hapus_mahasiswa">Hapus mahasiswa</string>
+    <string name="nama">Nama</string>
+    <string name="nim">NIM</string>
+    <string name="kelas">Kelas</string>
+    <string name="mahasiswa_invalid">Semua data harus diisi</string>
+    <string name="konfirmasi_hapus">Konfirmasi Hapus</string>
+    <string name="konfirmasi_hapus_mahasiswa">Apakah anda yakin ingin menghapus mahasiswa ini?</string>
+    <string name="batal">Batal</string>
 </resources>
