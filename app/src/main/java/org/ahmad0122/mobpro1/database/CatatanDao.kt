@@ -5,22 +5,22 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.model.Mahasiswa
 
 @Dao
-interface CatatanDao {
+interface MahasiswaDao {
     @Insert
-    suspend fun insert(catatan: Catatan)
+    suspend fun insert(mahasiswa: Mahasiswa)
 
     @Update
-    suspend fun update(catatan: Catatan)
+    suspend fun update(mahasiswa: Mahasiswa)
 
-    @Query("SELECT * FROM catatan ORDER BY tanggal DESC")
-    fun getCatatan(): Flow<List<Catatan>>
+    @Query("SELECT * FROM mahasiswa ORDER BY nama ASC")
+    fun getAllMahasiswa(): Flow<List<Mahasiswa>>
 
-    @Query("SELECT * FROM catatan WHERE id = :id")
-    suspend fun getCatatanById(id: Long): Catatan?
+    @Query("SELECT * FROM mahasiswa WHERE id = :id")
+    suspend fun getMahasiswaById(id: Long): Mahasiswa?
 
-    @Query("DELETE FROM catatan WHERE id = :id")
+    @Query("DELETE FROM mahasiswa WHERE id = :id")
     suspend fun deleteById(id: Long)
 }

@@ -4,26 +4,28 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.model.Mahasiswa
 
-@Database(entities = [Catatan::class], version = 1, exportSchema = false)
-abstract class CatatanDb: RoomDatabase() {
-    abstract val dao: CatatanDao
+@Database(entities = [Mahasiswa::class], version = 2, exportSchema = false)
+abstract class MahasiswaDb: RoomDatabase() {
+    abstract val dao: MahasiswaDao
 
     companion object {
         @Volatile
-        private var INSTANCE: CatatanDb? = null
+        private var INSTANCE: MahasiswaDb? = null
 
-        fun getInstance(context: Context): CatatanDb {
+        fun getInstance(context: Context): MahasiswaDb {
             synchronized(this) {
                 var instance = INSTANCE
 
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
-                        CatatanDb::class.java,
-                        "catatan.db"
-                    ).build()
+                        MahasiswaDb::class.java,
+                        "mahasiswa.db"
+                    )
+                    .fallbackToDestructiveMigration()
+                    .build()
                     INSTANCE = instance
                 }
                 return instance

@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import org.ahmad0122.mobpro1.database.CatatanDao
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.database.MahasiswaDao
+import org.ahmad0122.mobpro1.model.Mahasiswa
 
 
-class MainViewModel(dao: CatatanDao) : ViewModel() {
-    val data: StateFlow<List<Catatan>> = dao.getCatatan().stateIn(
+class MainViewModel(dao: MahasiswaDao) : ViewModel() {
+    val data: StateFlow<List<Mahasiswa>> = dao.getAllMahasiswa().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()

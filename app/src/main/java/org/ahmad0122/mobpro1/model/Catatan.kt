@@ -4,11 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "catatan")
-data class Catatan(
+@Entity(tableName = "mahasiswa")
+data class Mahasiswa(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val tanggal: String,
-    val judul: String,
-    val catatan: String
+    val nim: String,
+    val nama: String,
+    val jurusan: String
 )
