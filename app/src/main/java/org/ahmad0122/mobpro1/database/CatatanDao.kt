@@ -20,4 +20,7 @@ interface CatatanDao {
 
     @Query("SELECT * FROM catatan WHERE id = :id")
     suspend fun getCatatanById(id: Long): Catatan?
+
+    @Query("DELETE FROM catatan WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }
