@@ -51,8 +51,10 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: DetailViewModel = viewModel(factory = factory)
+
     var judul by remember { mutableStateOf(("")) }
     var catatan by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (id == null) return@LaunchedEffect
@@ -86,8 +88,8 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     IconButton(onClick = {
                         if (judul == "" || catatan == "") {
                             Toast.makeText(context, R.string.invalid, Toast.LENGTH_LONG).show()
-                        return@IconButton
-                    }
+                            return@IconButton
+                        }
 
                         if (id == null) {
                             viewModel.insert(judul,catatan)
@@ -103,8 +105,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     }
                     if (id != null) {
                         DeleteAction {
-                            viewModel.delete(id)
-                            navController.popBackStack()
+                            showDialog = true
                         }
                     }
                 }
@@ -119,6 +120,14 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             onDescChange = { catatan = it },
             modifier = Modifier.padding(padding)
         )
+        if (id != null && showDialog) {
+            DisplayAlertDialog(
+                onDismissRequest = { showDialog = false }) {
+                showDialog = false
+                viewModel.delete(id)
+                navController.popBackStack()
+            }
+        }
     }
 }
 
