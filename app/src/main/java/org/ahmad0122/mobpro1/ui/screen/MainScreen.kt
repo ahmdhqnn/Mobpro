@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,11 +50,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.ahmad0122.mobpro1.MainViewModel
 import org.ahmad0122.mobpro1.R
-import org.ahmad0122.mobpro1.model.Catatan
+import org.ahmad0122.mobpro1.model.Transaksi
 import org.ahmad0122.mobpro1.navigation.Screen
 import org.ahmad0122.mobpro1.ui.theme.Mobpro1Theme
 import org.ahmad0122.mobpro1.util.SettingsDataStore
 import org.ahmad0122.mobpro1.util.ViewModelFactory
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +102,7 @@ fun MainScreen(navController: NavHostController) {
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.tambah_catatan),
+                    contentDescription = stringResource(R.string.tambah_transaksi),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -114,42 +117,105 @@ fun ScreenContent(showList: Boolean, modifier: Modifier = Modifier, navControlle
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: MainViewModel = viewModel(factory = factory)
-    val data by viewModel.data.collectAsState()
+    val transaksi by viewModel.transaksi.collectAsState()
+    val totalPendapatan by viewModel.totalPendapatan.collectAsState()
+    val totalPengeluaran by viewModel.totalPengeluaran.collectAsState()
 
-    if (data.isEmpty()) {
-        Column (
-            modifier = modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Column(modifier = modifier.fillMaxSize()) {
+        // Ringkasan Keuangan
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
         ) {
-            Text(text = stringResource(R.string.list_kosong))
-        }
-    } else {
-        if (showList) {
-
-            LazyColumn(
-                modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 84.dp)
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(data) {
-                    ListItem(catatan = it) {
-                        navController.navigate(Screen.FormUbah.withId(it.id))
+                Text(
+                    text = "Ringkasan Keuangan",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "Pendapatan",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = formatRupiah(totalPendapatan),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
-                    HorizontalDivider()
+                    Column {
+                        Text(
+                            text = "Pengeluaran",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = formatRupiah(totalPengeluaran),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Saldo",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = formatRupiah(totalPendapatan - totalPengeluaran),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
         }
-        else {
-            LazyVerticalStaggeredGrid(
-                modifier = modifier.fillMaxSize(),
-                columns = StaggeredGridCells.Fixed(2),
-                verticalItemSpacing = 8.dp,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp, 8.dp,8.dp, 8.dp)
+
+        if (transaksi.isEmpty()) {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(data) {
-                    GridItem(catatan = it) {
-                        navController.navigate(Screen.FormUbah.withId(it.id))
+                Text(text = stringResource(R.string.list_kosong))
+            }
+        } else {
+            if (showList) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 84.dp)
+                ) {
+                    items(transaksi) {
+                        ListItem(transaksi = it) {
+                            navController.navigate(Screen.FormUbah.withId(it.id))
+                        }
+                        HorizontalDivider()
+                    }
+                }
+            } else {
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = StaggeredGridCells.Fixed(2),
+                    verticalItemSpacing = 8.dp,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 8.dp)
+                ) {
+                    items(transaksi) {
+                        GridItem(transaksi = it) {
+                            navController.navigate(Screen.FormUbah.withId(it.id))
+                        }
                     }
                 }
             }
@@ -158,28 +224,53 @@ fun ScreenContent(showList: Boolean, modifier: Modifier = Modifier, navControlle
 }
 
 @Composable
-fun ListItem(catatan: Catatan, onClick: () -> Unit) {
+fun ListItem(transaksi: Transaksi, onClick: () -> Unit) {
     Column (
-        modifier = Modifier.fillMaxWidth().clickable{ onClick() }.padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(text = catatan.judul,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = transaksi.jenis,
+                fontWeight = FontWeight.Bold,
+                color = if (transaksi.jenis == "PENDAPATAN") 
+                    MaterialTheme.colorScheme.primary 
+                else 
+                    MaterialTheme.colorScheme.error
+            )
+            Text(
+                text = formatRupiah(transaksi.jumlah),
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text(
+            text = transaksi.kategori,
+            style = MaterialTheme.typography.bodyMedium
         )
-        Text(text = catatan.catatan,
+        Text(
+            text = transaksi.deskripsi,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = catatan.tanggal)
+        Text(
+            text = transaksi.tanggal,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
 
 @Composable
-fun GridItem(catatan: Catatan, onClick: () -> Unit) {
+fun GridItem(transaksi: Transaksi, onClick: () -> Unit) {
     Card (
-        modifier = Modifier.fillMaxWidth().clickable { onClick()},
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
@@ -188,23 +279,45 @@ fun GridItem(catatan: Catatan, onClick: () -> Unit) {
         Column (
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = transaksi.jenis,
+                    fontWeight = FontWeight.Bold,
+                    color = if (transaksi.jenis == "PENDAPATAN") 
+                        MaterialTheme.colorScheme.primary 
+                    else 
+                        MaterialTheme.colorScheme.error
+                )
+                Text(
+                    text = formatRupiah(transaksi.jumlah),
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Text(
-                text = catatan.judul,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
+                text = transaksi.kategori,
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = catatan.catatan,
-                maxLines = 4,
+                text = transaksi.deskripsi,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(text = catatan.tanggal)
+            Text(
+                text = transaksi.tanggal,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
 
+fun formatRupiah(amount: Double): String {
+    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    return format.format(amount)
+}
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
