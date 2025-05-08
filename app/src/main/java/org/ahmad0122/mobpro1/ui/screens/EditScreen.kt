@@ -10,14 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import org.ahmad0122.mobpro1.ui.viewmodel.MainViewModel
 import org.ahmad0122.mobpro1.model.Transaksi
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
     onNavigateBack: () -> Unit,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    backStackEntry: NavBackStackEntry
 ) {
     var keterangan by remember { mutableStateOf("") }
     var jumlah by remember { mutableStateOf("") }
@@ -25,15 +28,20 @@ fun EditScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var transaksi by remember { mutableStateOf<Transaksi?>(null) }
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        val transaksiId = viewModel.currentTransaksiId
-        if (transaksiId != null) {
-            transaksi = viewModel.getTransaksiById(transaksiId)
-            transaksi?.let {
-                keterangan = it.keterangan
-                jumlah = it.jumlah.toString()
-                jenis = it.jenis
+    val transaksiId = backStackEntry.arguments?.getLong("transaksiId")
+
+    LaunchedEffect(transaksiId) {
+        transaksiId?.let { id ->
+            scope.launch {
+                val existingTransaksi = viewModel.getTransaksiById(id)
+                existingTransaksi?.let {
+                    transaksi = it
+                    keterangan = it.keterangan
+                    jumlah = it.jumlah.toString()
+                    jenis = it.jenis
+                }
             }
         }
     }

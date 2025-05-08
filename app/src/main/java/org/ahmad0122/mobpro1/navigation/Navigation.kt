@@ -1,7 +1,6 @@
 package org.ahmad0122.mobpro1.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,12 +8,10 @@ import org.ahmad0122.mobpro1.ui.screens.AddScreen
 import org.ahmad0122.mobpro1.ui.screens.EditScreen
 import org.ahmad0122.mobpro1.ui.screens.HomeScreen
 import org.ahmad0122.mobpro1.ui.screens.RecycleBinScreen
-import org.ahmad0122.mobpro1.ui.viewmodel.MainViewModel
 
 @Composable
 fun Navigation(navController: NavHostController) {
-    val viewModel: MainViewModel = viewModel()
-    
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -25,7 +22,6 @@ fun Navigation(navController: NavHostController) {
                     navController.navigate(Screen.Add.route)
                 },
                 onNavigateToEdit = { transaksiId ->
-                    viewModel.setCurrentTransaksiId(transaksiId)
                     navController.navigate(Screen.Edit.createRoute(transaksiId))
                 },
                 onNavigateToRecycleBin = {
@@ -45,11 +41,12 @@ fun Navigation(navController: NavHostController) {
         composable(
             route = Screen.Edit.route,
             arguments = Screen.Edit.arguments
-        ) {
+        ) { backStackEntry ->
             EditScreen(
                 onNavigateBack = {
                     navController.popBackStack()
-                }
+                },
+                backStackEntry = backStackEntry
             )
         }
         
