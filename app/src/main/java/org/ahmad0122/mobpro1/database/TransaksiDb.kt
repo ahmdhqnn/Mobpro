@@ -3,10 +3,12 @@ package org.ahmad0122.mobpro1.database
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import android.content.Context
 import org.ahmad0122.mobpro1.model.Transaksi
 
-@Database(entities = [Transaksi::class], version = 1, exportSchema = false)
+@Database(entities = [Transaksi::class], version = 2, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class TransaksiDb: RoomDatabase() {
     abstract val dao: TransaksiDao
 
@@ -23,11 +25,13 @@ abstract class TransaksiDb: RoomDatabase() {
                         context.applicationContext,
                         TransaksiDb::class.java,
                         "keuangan.db"
-                    ).build()
+                    )
+                    .fallbackToDestructiveMigration()
+                    .build()
                     INSTANCE = instance
                 }
                 return instance
             }
         }
     }
-}
+} 

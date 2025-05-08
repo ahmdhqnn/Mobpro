@@ -38,4 +38,4 @@ interface TransaksiDao {
 
     @Query("SELECT SUM(jumlah) FROM transaksi WHERE jenis = 'PENGELUARAN' AND isDeleted = 0")
     fun getTotalPengeluaran(): Flow<Double>
-}
+} 

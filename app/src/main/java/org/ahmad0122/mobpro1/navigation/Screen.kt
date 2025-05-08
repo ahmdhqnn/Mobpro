@@ -1,11 +1,19 @@
 package org.ahmad0122.mobpro1.navigation
 
-import org.ahmad0122.mobpro1.ui.screen.KEY_ID_TRANSAKSI
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 sealed class Screen(val route: String) {
-    data object Home: Screen("mainScreen")
-    data object FormBaru: Screen("detailScreen")
-    data object FormUbah: Screen("detailScreen/{$KEY_ID_TRANSAKSI}") {
-        fun withId(id: Long) = "detailScreen/$id"
+    object Home : Screen("home")
+    object Add : Screen("add")
+    object Edit : Screen("edit/{transaksiId}") {
+        fun createRoute(transaksiId: Long) = "edit/$transaksiId"
+        
+        val arguments = listOf(
+            navArgument("transaksiId") {
+                type = NavType.LongType
+            }
+        )
     }
+    object RecycleBin : Screen("recycle_bin")
 }
