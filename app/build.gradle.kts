@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.panjirai0110.mobpro1"
+    namespace = "org.panjirai0110.mobpro1"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.panjirai0110.mobpro1"
+        applicationId = "org.panjirai0110.mobpro1"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
