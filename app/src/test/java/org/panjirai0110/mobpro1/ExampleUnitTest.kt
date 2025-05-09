@@ -1,4 +1,4 @@
-package org.ahmad0122.mobpro1
+package org.panjirai0110.mobpro1
 
 import org.junit.Test
 
