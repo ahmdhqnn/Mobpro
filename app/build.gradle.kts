@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "org.ahmad0122.mobpro1"
+    namespace = "org.haris0035.mobpro1"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "org.ahmad0122.mobpro1"
+        applicationId = "org.haris0035.mobpro1"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
