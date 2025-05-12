@@ -1,5 +1,6 @@
 package org.ahmad0122.mobpro1.ui.screens
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.ahmad0122.mobpro1.data.model.Priority
 import org.ahmad0122.mobpro1.data.model.Task
@@ -67,6 +69,27 @@ fun AddEditTaskScreen(
     val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     var showPriorityDropdown by remember { mutableStateOf(false) }
     var showCategoryDropdown by remember { mutableStateOf(false) }
+    
+    // Untuk DatePicker
+    val context = LocalContext.current
+    
+    // Kalender untuk manipulasi tanggal
+    val calendar = Calendar.getInstance()
+    calendar.time = dueDate
+    
+    // DatePickerDialog
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            dueDate = calendar.time
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
     
     // Cek jika task ditemukan saat mode edit
     LaunchedEffect(taskId) {
@@ -164,8 +187,8 @@ fun AddEditTaskScreen(
                 
                 TextButton(
                     onClick = {
-                        // Di sini bisa diimplementasikan DatePicker
-                        // Untuk sekarang, hanya menggunakan tanggal default
+                        // Tampilkan DatePickerDialog
+                        datePickerDialog.show()
                     }
                 ) {
                     Icon(

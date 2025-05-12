@@ -33,6 +33,11 @@ fun TaskListScreen(
     var showErrorDialog by remember { mutableStateOf(false) }
     var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
 
+    // Debug output untuk melihat perubahan tampilan
+    LaunchedEffect(listViewType) {
+        println("View type changed to: $listViewType")
+    }
+
     LaunchedEffect(uiState.error) {
         if (uiState.error != null) {
             showErrorDialog = true
@@ -116,49 +121,61 @@ fun TaskListScreen(
                         )
                     }
                 } else {
-                    if (listViewType == "grid") {
-                        // Grid View
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(filteredTasks) { task ->
-                                TaskItem(
-                                    task = task,
-                                    categoryName = task.categoryId?.let { id ->
-                                        uiState.categories.find { it.id == id }?.name
-                                    },
-                                    categoryColor = task.categoryId?.let { id ->
-                                        uiState.categories.find { it.id == id }?.color
-                                    },
-                                    onTaskClick = { onNavigateToTaskDetail(task.id) },
-                                    isGridView = true
-                                )
+                    when (listViewType) {
+                        "grid" -> {
+                            // Grid View
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(filteredTasks) { task ->
+                                    TaskItem(
+                                        task = task,
+                                        categoryName = task.categoryId?.let { id ->
+                                            uiState.categories.find { it.id == id }?.name
+                                        },
+                                        categoryColor = task.categoryId?.let { id ->
+                                            uiState.categories.find { it.id == id }?.color
+                                        },
+                                        onTaskClick = { onNavigateToTaskDetail(task.id) },
+                                        isGridView = true
+                                    )
+                                }
                             }
                         }
-                    } else {
-                        // List View
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(filteredTasks) { task ->
-                                TaskItem(
-                                    task = task,
-                                    categoryName = task.categoryId?.let { id ->
-                                        uiState.categories.find { it.id == id }?.name
-                                    },
-                                    categoryColor = task.categoryId?.let { id ->
-                                        uiState.categories.find { it.id == id }?.color
-                                    },
-                                    onTaskClick = { onNavigateToTaskDetail(task.id) },
-                                    isGridView = false
-                                )
+                        "list" -> {
+                            // List View
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(filteredTasks) { task ->
+                                    TaskItem(
+                                        task = task,
+                                        categoryName = task.categoryId?.let { id ->
+                                            uiState.categories.find { it.id == id }?.name
+                                        },
+                                        categoryColor = task.categoryId?.let { id ->
+                                            uiState.categories.find { it.id == id }?.color
+                                        },
+                                        onTaskClick = { onNavigateToTaskDetail(task.id) },
+                                        isGridView = false
+                                    )
+                                }
                             }
+                        }
+                        else -> {
+                            // Fallback jika tipe tampilan tidak valid
+                            Text(
+                                text = "Tipe tampilan tidak valid: $listViewType. Harap atur kembali tampilan di pengaturan.",
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }

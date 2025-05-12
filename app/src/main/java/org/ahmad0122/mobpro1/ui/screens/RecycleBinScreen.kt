@@ -123,18 +123,18 @@ fun RecycleBinScreen(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    Text(
+                            Text(
                         text = "Item yang dihapus akan muncul di sini",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            } else {
-                LazyColumn(
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    } else {
+                        LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                     items(deletedTasks) { recycleBin ->
                         DeletedTaskItem(
                             recycleBin = recycleBin,

@@ -26,6 +26,7 @@ class SettingsViewModel(private val userPreferences: UserPreferences) : ViewMode
 
     fun setListViewType(viewType: String) {
         viewModelScope.launch {
+            println("Setting view type to: $viewType")
             userPreferences.setListViewType(viewType)
         }
     }
